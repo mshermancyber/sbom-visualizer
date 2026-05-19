@@ -96,6 +96,10 @@ Scores are computed locally from the vector string using the FIRST CVSS 3.1 base
 
 ---
 
+## Sample SBOMs
+
+Need an SBOM to test with? The [anchore/sbom-examples](https://github.com/anchore/sbom-examples?tab=readme-ov-file) repository has a curated collection of CycloneDX and SPDX files across a range of real-world container images and package ecosystems — ready to drop straight into the tool.
+
 ## Usage
 
 ```
