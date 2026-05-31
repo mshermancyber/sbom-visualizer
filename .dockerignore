@@ -1,0 +1,41 @@
+# Keep the build context lean — the web image only needs frontend/ + nginx/.
+
+# Dependency / build output (rebuilt inside the image)
+**/node_modules
+**/dist
+frontend/.vite
+
+# Service contexts with their own images (backend/, feeds/) — not part of the
+# root (web) build context, which only needs frontend/ + nginx/.
+backend/
+feeds/
+
+# Python / backend artifacts
+**/.venv
+**/venv
+**/__pycache__
+**/*.pyc
+**/.pytest_cache
+**/.mypy_cache
+**/.ruff_cache
+
+# VCS / editor / OS
+.git
+.gitignore
+**/.DS_Store
+**/.idea
+**/.vscode
+
+# Secrets & local certs (mounted at runtime, never baked in)
+.env
+certs/*.pem
+
+# Repo cruft / release artifacts
+release/
+sbom-visualizer-main/
+*.zip
+**/*.log
+
+# Docs aren't needed in the build context
+docs/
+README.md
