@@ -1,0 +1,7 @@
+fastapi==0.136.3
+uvicorn[standard]==0.48.0
+httpx==0.28.1
+pydantic==2.13.4
+cvss==3.6
+setuptools>=61
+pytest==8.4.2

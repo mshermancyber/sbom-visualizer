@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "sbom-visualizer-backend"
+version = "1.0.0"
+description = "Server-side SBOM parsing, vulnerability scanning, enrichment, and assessment."
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi==0.136.3",
+    "uvicorn[standard]==0.48.0",
+    "httpx==0.28.1",
+    "pydantic==2.13.4",
+    "cvss==3.6",
+]
+
+[project.optional-dependencies]
+test = ["pytest==8.4.2"]
+
+[project.scripts]
+sbom-scan = "app.cli:main"
+
+[tool.setuptools]
+packages = ["app"]
