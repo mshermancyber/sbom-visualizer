@@ -1,0 +1,25 @@
+# deps & build
+**/node_modules/
+**/dist/
+**/.venv/
+**/__pycache__/
+**/.pytest_cache/
+*.pyc
+**/*.egg-info/
+
+# local secrets / certs / env
+.env
+certs/*.pem
+
+# local vulnerability data — downloaded at build/runtime, never committed
+# (KEV/EPSS/NVD live in the feeds-data volume; OSV mirror in the osv-db volume)
+*.db
+*.db-wal
+*.db-shm
+*.csv
+*.csv.gz
+all.zip
+
+# misc
+*.tar.gz
+.DS_Store
