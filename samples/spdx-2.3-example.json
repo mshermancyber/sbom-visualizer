@@ -1,0 +1,72 @@
+{
+  "spdxVersion": "SPDX-2.3",
+  "dataLicense": "CC0-1.0",
+  "SPDXID": "SPDXRef-DOCUMENT",
+  "name": "demo-spdx-sbom",
+  "documentNamespace": "https://example.com/spdx/demo-spdx-sbom-1.0.0",
+  "creationInfo": {
+    "created": "2024-02-01T12:00:00Z",
+    "creators": ["Tool: sample-generator-1.0.0"]
+  },
+  "packages": [
+    {
+      "name": "log4j-core",
+      "SPDXID": "SPDXRef-Package-log4j-core",
+      "versionInfo": "2.14.1",
+      "downloadLocation": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:maven/org.apache.logging.log4j/log4j-core@2.14.1"
+        }
+      ]
+    },
+    {
+      "name": "lodash",
+      "SPDXID": "SPDXRef-Package-lodash",
+      "versionInfo": "4.17.15",
+      "downloadLocation": "NOASSERTION",
+      "licenseConcluded": "MIT",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:npm/lodash@4.17.15"
+        }
+      ]
+    },
+    {
+      "name": "openssl",
+      "SPDXID": "SPDXRef-Package-openssl",
+      "versionInfo": "1.1.1k",
+      "downloadLocation": "NOASSERTION",
+      "licenseConcluded": "OpenSSL",
+      "externalRefs": [
+        {
+          "referenceCategory": "SECURITY",
+          "referenceType": "cpe23Type",
+          "referenceLocator": "cpe:2.3:a:openssl:openssl:1.1.1k:*:*:*:*:*:*:*"
+        },
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:deb/debian/openssl@1.1.1k"
+        }
+      ]
+    }
+  ],
+  "relationships": [
+    {
+      "spdxElementId": "SPDXRef-DOCUMENT",
+      "relationshipType": "DESCRIBES",
+      "relatedSpdxElement": "SPDXRef-Package-log4j-core"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-log4j-core",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-lodash"
+    }
+  ]
+}

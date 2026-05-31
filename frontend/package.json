@@ -1,0 +1,26 @@
+{
+  "name": "sbom-visualizer-frontend",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@fontsource/jetbrains-mono": "^5.2.8",
+    "@tabler/icons-webfont": "^2.47.0",
+    "chart.js": "^4.4.1",
+    "d3": "^7.8.5"
+  },
+  "devDependencies": {
+    "@types/d3": "^7.4.3",
+    "happy-dom": "^20.9.0",
+    "typescript": "^5.4.5",
+    "vite": "^5.2.0",
+    "vitest": "^4.1.7"
+  }
+}

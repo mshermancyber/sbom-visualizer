@@ -1,0 +1,67 @@
+{
+  "bomFormat": "CycloneDX",
+  "specVersion": "1.5",
+  "serialNumber": "urn:uuid:3e671687-395b-41f5-a30f-a58921a69b79",
+  "version": 1,
+  "metadata": {
+    "timestamp": "2024-01-15T08:00:00Z",
+    "tools": [{ "vendor": "example", "name": "sample-generator", "version": "1.0.0" }],
+    "component": {
+      "type": "application",
+      "name": "demo-web-service",
+      "version": "2.3.0"
+    }
+  },
+  "components": [
+    {
+      "type": "library",
+      "name": "log4j-core",
+      "version": "2.14.1",
+      "purl": "pkg:maven/org.apache.logging.log4j/log4j-core@2.14.1",
+      "bom-ref": "pkg:maven/org.apache.logging.log4j/log4j-core@2.14.1",
+      "licenses": [{ "license": { "id": "Apache-2.0" } }]
+    },
+    {
+      "type": "library",
+      "name": "lodash",
+      "version": "4.17.15",
+      "purl": "pkg:npm/lodash@4.17.15",
+      "bom-ref": "pkg:npm/lodash@4.17.15",
+      "licenses": [{ "license": { "id": "MIT" } }]
+    },
+    {
+      "type": "library",
+      "name": "requests",
+      "version": "2.19.1",
+      "purl": "pkg:pypi/requests@2.19.1",
+      "bom-ref": "pkg:pypi/requests@2.19.1",
+      "licenses": [{ "license": { "id": "Apache-2.0" } }]
+    },
+    {
+      "type": "library",
+      "name": "jackson-databind",
+      "version": "2.9.8",
+      "purl": "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.9.8",
+      "bom-ref": "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.9.8",
+      "licenses": [{ "license": { "id": "Apache-2.0" } }]
+    },
+    {
+      "type": "library",
+      "name": "express",
+      "version": "4.17.1",
+      "purl": "pkg:npm/express@4.17.1",
+      "bom-ref": "pkg:npm/express@4.17.1",
+      "licenses": [{ "license": { "id": "MIT" } }]
+    }
+  ],
+  "dependencies": [
+    {
+      "ref": "pkg:maven/org.apache.logging.log4j/log4j-core@2.14.1",
+      "dependsOn": []
+    },
+    {
+      "ref": "pkg:npm/express@4.17.1",
+      "dependsOn": ["pkg:npm/lodash@4.17.15"]
+    }
+  ]
+}

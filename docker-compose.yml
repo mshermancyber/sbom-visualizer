@@ -1,0 +1,133 @@
+# Docker Compose stack for the SBOM Visualizer (Compose v2 schema).
+#   api   : FastAPI backend (internal only, not published)
+#   feeds : local KEV/EPSS/NVD vulnerability mirror (internal only)
+#   web   : nginx TLS reverse proxy + SPA host (publishes :80 and :443)
+
+name: sbom-visualizer
+
+services:
+  # ---- Backend API (internal only) ---------------------------------------
+  api:
+    build:
+      context: ./backend
+    image: sbom-visualizer-api:local
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      # Use the local feeds mirror for KEV/EPSS/NVD enrichment, with graceful
+      # live-fallback while the mirror is still populating (see feeds service).
+      USE_FEEDS: "true"
+      FEEDS_URL: "http://feeds:9000"
+      # Offline-OSV discovery: run the bundled osv-scanner binary against the
+      # locally-mirrored OSV database (the osv-db volume, populated by feeds).
+      # osv-scanner reads $XDG_CACHE_HOME/osv-scanner/<eco>/all.zip. Falls back
+      # to live api.osv.dev while the mirror is still populating.
+      USE_OFFLINE_OSV: "true"
+      OSV_CACHE_DIR: "/osv-cache"
+      XDG_CACHE_HOME: "/osv-cache"
+    depends_on:
+      # service_started (NOT service_healthy): the mirror's first full NVD crawl
+      # can take a long time, and the api must come up immediately and use
+      # live-fallback until the mirror is ready.
+      feeds:
+        condition: service_started
+    expose:
+      - "8000"            # reachable only on the internal network as api:8000
+    volumes:
+      # Persist VEX suppressions, scan history, and API keys across restarts.
+      - api-data:/data
+      # Shared offline-OSV mirror. The contract says api reads it read-only,
+      # but osv-scanner with XDG_CACHE_HOME=/osv-cache may create subdirs/lock
+      # files under the cache dir at scan time, which fails on a :ro mount.
+      # Tradeoff: mount read-write so osv-scanner never hits cache-write errors
+      # (feeds remains the sole writer of DB content; api only reads the zips).
+      - osv-db:/osv-cache
+    networks:
+      - sbom-net
+    healthcheck:
+      # Pure-Python check so we don't depend on curl/wget being in the image.
+      test: ["CMD", "python", "-c", "import urllib.request,sys; sys.exit(0 if urllib.request.urlopen('http://localhost:8000/api/health',timeout=3).status==200 else 1)"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
+  # ---- Feeds: local KEV/EPSS/NVD mirror (internal only) ------------------
+  feeds:
+    build:
+      context: ./feeds      # the feeds service has its own Dockerfile
+    image: sbom-visualizer-feeds:local
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      # Mirror tunables (safe defaults live in the image; override via .env).
+      NVD_API_KEY: "${NVD_API_KEY:-}"
+      FEEDS_DAILY_AT: "${FEEDS_DAILY_AT:-03:15}"
+      NVD_INITIAL_MAX_PAGES: "${NVD_INITIAL_MAX_PAGES:-0}"
+      LOG_LEVEL: "${LOG_LEVEL:-info}"
+      # Where the daily OSV mirror download lands (the osv-db shared volume).
+      OSV_CACHE_DIR: "/osv-cache"
+    expose:
+      - "9000"            # reachable only on the internal network as feeds:9000
+    volumes:
+      # Persist the SQLite mirror (/data/feeds.db) across restarts/rebuilds.
+      - feeds-data:/data
+      # Offline-OSV mirror — feeds is the writer (read-write). Populates
+      # /osv-cache/osv-scanner/<eco>/all.zip daily (~1.2GB, all 45 ecosystems).
+      - osv-db:/osv-cache
+    networks:
+      - sbom-net
+    healthcheck:
+      # Pure-Python check so we don't depend on curl/wget being in the image.
+      test: ["CMD", "python", "-c", "import urllib.request,sys; sys.exit(0 if urllib.request.urlopen('http://localhost:9000/feeds/health',timeout=3).status==200 else 1)"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
+  # ---- Web: TLS reverse proxy + static SPA -------------------------------
+  web:
+    build:
+      context: .                 # product root: build can see frontend/ + nginx/
+      dockerfile: web.Dockerfile
+    image: sbom-visualizer-web:local
+    restart: unless-stopped
+    depends_on:
+      api:
+        condition: service_healthy
+    environment:
+      # Externally-published HTTPS port, baked into the HTTP->HTTPS redirect via
+      # envsubst so the redirect is correct even on a non-standard port (e.g. 8080).
+      PUBLIC_HTTPS_PORT: "${HTTPS_PORT:-443}"
+      NGINX_ENVSUBST_FILTER: "PUBLIC_HTTPS_PORT"
+    ports:
+      - "${HTTP_PORT:-80}:80"
+      - "${HTTPS_PORT:-443}:443"
+    volumes:
+      # Certs mounted read-only; swap the files + `docker compose restart web`
+      # to use real/Let's Encrypt certs without rebuilding the image.
+      - ./certs:/etc/nginx/certs:ro
+    networks:
+      - sbom-net
+    healthcheck:
+      # Verify TLS endpoint is serving (self-signed -> -k). wget ships in alpine.
+      test: ["CMD", "wget", "--no-verbose", "--no-check-certificate", "--spider", "https://localhost/"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+networks:
+  sbom-net:
+    driver: bridge
+
+volumes:
+  # Persistent SQLite store for the feeds mirror (KEV/EPSS/NVD).
+  feeds-data:
+  # Persistent SQLite stores for the api: VEX suppressions, scan history, API keys.
+  api-data:
+  # Offline OSV database mirror (~1.2GB, all 45 ecosystems). Written by feeds,
+  # read by api's osv-scanner in --offline-vulnerabilities mode.
+  osv-db:

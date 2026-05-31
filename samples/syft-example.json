@@ -1,0 +1,59 @@
+{
+  "artifacts": [
+    {
+      "id": "a1b2c3d4e5f60001",
+      "name": "lodash",
+      "version": "4.17.15",
+      "type": "npm",
+      "purl": "pkg:npm/lodash@4.17.15",
+      "cpes": [{ "cpe": "cpe:2.3:a:lodash:lodash:4.17.15:*:*:*:*:node.js:*:*" }],
+      "licenses": [{ "value": "MIT" }]
+    },
+    {
+      "id": "a1b2c3d4e5f60002",
+      "name": "log4j-core",
+      "version": "2.14.1",
+      "type": "java-archive",
+      "purl": "pkg:maven/org.apache.logging.log4j/log4j-core@2.14.1",
+      "cpes": [{ "cpe": "cpe:2.3:a:apache:log4j:2.14.1:*:*:*:*:*:*:*" }],
+      "licenses": [{ "value": "Apache-2.0" }]
+    },
+    {
+      "id": "a1b2c3d4e5f60003",
+      "name": "openssl",
+      "version": "1.1.1k-1",
+      "type": "deb",
+      "purl": "pkg:deb/debian/openssl@1.1.1k-1?arch=amd64",
+      "cpes": [{ "cpe": "cpe:2.3:a:openssl:openssl:1.1.1k:*:*:*:*:*:*:*" }],
+      "licenses": [{ "value": "OpenSSL" }]
+    }
+  ],
+  "artifactRelationships": [
+    {
+      "parent": "a1b2c3d4e5f60002",
+      "child": "a1b2c3d4e5f60001",
+      "type": "dependency-of"
+    }
+  ],
+  "source": {
+    "id": "img-sha256-demo",
+    "type": "image",
+    "target": {
+      "userInput": "demo-image:latest",
+      "imageID": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+    }
+  },
+  "distro": {
+    "prettyName": "Debian GNU/Linux 11 (bullseye)",
+    "name": "Debian GNU/Linux",
+    "id": "debian",
+    "version": "11"
+  },
+  "descriptor": {
+    "name": "syft",
+    "version": "1.0.0"
+  },
+  "schema": {
+    "version": "16.0.0"
+  }
+}
